@@ -55,22 +55,36 @@ class Pokemon:
             )
         return self
 
-    def attack(self, other, attack:str):
+    def calculate_damage(self, other, attack: str) -> int:
         if attack not in self.attacks:
             raise ValueError(f"{attack} is not a valid attack!")
-        if self.attacks[attack]["class"] == "physical":
-            dmg_dealt  = int((((2 * self.lvl // 5 + 2) * self.attacks[attack]["power"] *
-                                self.stats["atk"] // other.stats["defense"]) // 50) + 2)
 
-        elif self.attacks[attack]["class"] == "special":
-                    dmg_dealt  = int((((2 * self.lvl // 5 + 2) * self.attacks[attack]["power"] *
-                                        self.stats["spatk"] // other.stats["spdef"]) // 50) + 2)
+        move = self.attacks[attack]
+        power = move["power"]
+
+        if move["class"] == "physical":
+            attack_stat = self.stats["atk"]
+            defense_stat = other.stats["defense"]
+
+        elif move["class"] == "special":
+            attack_stat = self.stats["spatk"]
+            defense_stat = other.stats["spdef"]
+
         else:
             raise ValueError("Unknown attack class")
-        other.current_hp = max(0, other.current_hp - dmg_dealt)
-        print(f"{self.name} uses {attack}!\n"
-              f"{other.name} recieves {dmg_dealt} damage!"
-              )
+
+        damage = (
+            ((2 * self.lvl // 5 + 2) * power * attack_stat // defense_stat)
+            // 50 + 2
+        )
+
+        return damage
+
+
+    def receive_damage(self, damage: int) -> None:
+        self.current_hp = max(0, self.current_hp - damage)
+
+
 
     def is_fainted(self)->bool:
         if self.current_hp == 0:
@@ -78,12 +92,12 @@ class Pokemon:
         return False
 
 
-        
+            
+                
+
+
+
             
 
 
-
-        
-
-
-   
+    
